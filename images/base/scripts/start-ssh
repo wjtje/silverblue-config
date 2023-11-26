@@ -1,0 +1,34 @@
+#!/bin/bash
+sudo /usr/libexec/openssh/sshd-keygen rsa
+sudo /usr/libexec/openssh/sshd-keygen ecdsa
+sudo /usr/libexec/openssh/sshd-keygen ed25519
+
+# Get random port
+RANDOM_PORT=$(shuf -i 2000-65000 -n 1)
+
+# Check if port is in use
+if nc -w 1 -zv "localhost" $RANDOM_PORT  &>/dev/null; then
+    echo "TCP/$RANDOM_PORT is in use"
+    exit 1
+fi
+
+# Add to sshd_config
+echo "
+Port $RANDOM_PORT           # Bind to a random port that's not inuse
+ListenAddress localhost     # Don't allow remote connections
+PermitEmptyPasswords yes
+PermitUserEnvironment yes" | sudo tee -a /etc/ssh/sshd_config.d/99-toolbox.conf > /dev/null
+
+HOST_NAME=toolbox-$(cat /run/.containerenv | grep 'name=' | sed -e 's/^name="\(.*\)"$/\1/')
+# Remove exsisting host from ssh config
+sed 's/^Host/\n&/' ~/.ssh/config | sed '/^Host '"$HOST_NAME"'$/,/^$/d;/^$/d' | tee ~/.ssh/config > /dev/null
+
+# Add new to ssh config
+echo "
+Host $HOST_NAME
+    HostName localhost
+    Port $RANDOM_PORT
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null" >> ~/.ssh/config
+
+sudo /usr/sbin/sshd

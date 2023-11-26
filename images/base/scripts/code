@@ -1,0 +1,3 @@
+#!/bin/bash
+HOST_NAME=toolbox-$(cat /run/.containerenv | grep 'name=' | sed -e 's/^name="\(.*\)"$/\1/')
+flatpak-spawn --host /var/lib/flatpak/exports/bin/com.visualstudio.code --folder-uri vscode-remote://ssh-remote+$HOST_NAME$(pwd)
