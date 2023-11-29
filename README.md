@@ -29,7 +29,9 @@ There is a small addition to the stock oh-my-zsh config that changes the prompt 
 
 These are custom images that can be used for a toolbox.
 
-- [base](./images/base/README.md) - Only includes zsh and ssh-server, prefect for a starting point
+- [base](./images/base/README.md) - Only includes zsh and extra gnome themes, perfect for a starting point
+- [development-base](./images/development-base/README.md) - Includes vscode and pinentry for gpg, perfect for a development workflow.
+- [development-flutter](./images/development-flutter/README.md) - Added flutter and android studion on top of the development base.
 
 All images can be build and run using the following commands:
 
